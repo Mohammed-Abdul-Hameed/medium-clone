@@ -1,4 +1,4 @@
-# Medium Clone — Full Stack MERN Application
+# Medium Clone - Full Stack MERN Application
 
 A production-style Medium-like blogging platform built using the **MERN stack**.
 This project demonstrates **clean backend architecture**, **JWT authentication**, **protected REST APIs**, and a **modern React frontend**.
@@ -202,3 +202,4 @@ npm run build:backend
 ```bash
 npm run build:frontend
 ```
+
