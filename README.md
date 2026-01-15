@@ -1,205 +1,203 @@
-# Medium Clone - Full Stack MERN Application
+# NodeJS Auth API
 
-A production-style Medium-like blogging platform built using the **MERN stack**.
-This project demonstrates **clean backend architecture**, **JWT authentication**, **protected REST APIs**, and a **modern React frontend**.
+A REST API implementation demonstrating JWT-based authentication with access and refresh tokens.
 
-The backend follows **MVC + Service layer separation**, structured validation, and centralized error handling.
-The frontend uses **Context-based authentication state** and **protected routing**.
+## Overview
 
-This project is designed to showcase **real-world full-stack engineering practices** rather than tutorial-style code.
+I built this project to understand how real authentication systems work behind the scenes. It handles user registration, login, token management, and protected routes using industry-standard practices.
 
----
+## Features
 
-## Project Overview
-
-The application provides core Medium-like functionality:
-
-- Secure user registration and login
-- JWT-based authenticated sessions
-- Public article feed
-- Authenticated article creation
-- Author-only article editing and deletion
-- Public user profile pages listing authored articles
-
-The goal is to demonstrate:
-
-- Scalable REST API design
-- Proper separation of concerns in backend
-- Secure authentication workflows
-- Clean frontend-backend integration
-
----
+- User registration with hashed password storage
+- JWT-based authentication (access + refresh tokens)
+- Automatic token refresh functionality
+- Protected route middleware
+- Session management with MongoDB
+- Secure password hashing with bcrypt
 
 ## Tech Stack
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB + Mongoose ODM
-- JWT Authentication
-- Bcrypt Password Hashing
-- Zod Validation
-- Centralized Error Handling Middleware
+- **Runtime:** Node.js
+- **Framework:** Express
+- **Database:** MongoDB
+- **ODM:** Mongoose
+- **Authentication:** JWT (jsonwebtoken)
+- **Password Hashing:** bcrypt
 
-### Frontend
-- React 18
-- Vite
-- React Router
-- Axios
-- Context API for Authentication State
-- Tailwind CSS
+## Getting Started
 
-### Tooling
-- Nodemon
-- Postman
+### Prerequisites
 
----
+- Node.js installed
+- MongoDB instance (local or cloud)
 
-## Architecture Overview
+### Installation
 
-Request lifecycle:
-
-```
-Route → Middleware → Controller → Service → Model → Database
+1. Clone the repository:
+```bash
+git clone https://github.com/Mohammed-Abdul-Hameed/NodeJS-Auth-API
+cd NodeJS-Auth-API
 ```
 
-- Middleware handles authentication and validation
-- Controllers manage HTTP logic
-- Services contain business rules
-- Models interact with MongoDB
+2. Install dependencies:
+```bash
+npm install
+```
 
-No layer leaks responsibilities into another.
+3. Create a `.env` file in the root directory:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+```
 
----
+4. Start the server:
+```bash
+npm start
+```
 
-## Core Features
+The API will be running at `http://localhost:5000`
 
-### Authentication
-- User Signup & Login
-- JWT-based session management
-- Password hashing with bcrypt
-- Protected API routes
+## API Documentation
 
-### Articles
-- Create, Read, Update, Delete operations
-- Author-only modification access
-- Automatic unique slug generation
-
-### Users
-- Public profile pages
-- Author article listing
-
----
-
-## Running Locally
-
-### Start Backend
-
-Backend runs at:
-
+### Base URL
 ```
 http://localhost:5000
 ```
 
-### Start Frontend
+### Authentication Routes
 
-Frontend runs at:
+#### 1. Sign Up
+Register a new user account.
 
+**Endpoint:** `POST /api/auth/signup`
+
+**Request Body:**
+```json
+{
+  "username": "abdul",
+  "email": "abdul@example.com",
+  "password": "Password123"
+}
 ```
-http://localhost:5173
+
+**Response:**
+```json
+{
+  "message": "User registered successfully"
+}
 ```
 
 ---
 
-## API Endpoints
+#### 2. Login
+Authenticate user and receive tokens.
 
-### Authentication `/api/auth`
+**Endpoint:** `POST /api/auth/login`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /signup | Register user |
-| POST | /login | Login user |
-| GET  | /me | Get current user |
+**Request Body:**
+```json
+{
+  "email": "abdul@example.com",
+  "password": "Password123"
+}
+```
 
-### Articles `/api/articles`
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | / | Get all articles |
-| GET | /:id | Get single article |
-| POST | / | Create article (auth required) |
-| PUT | /:id | Update article (author only) |
-| DELETE | /:id | Delete article (author only) |
-
-### Users `/api/users`
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /:username | Get user profile |
+**Response:**
+```json
+{
+  "accessToken": "jwt_access_token",
+  "refreshToken": "jwt_refresh_token"
+}
+```
 
 ---
 
-## API Testing
+#### 3. Refresh Access Token
+Get a new access token using a valid refresh token.
 
-Base URL:
+**Endpoint:** `POST /api/auth/refresh`
 
-```
-http://localhost:5000/api
-```
-
-### Signup
-
-POST `/auth/signup`
-
-Body:
-
+**Request Body:**
 ```json
 {
-  "username": "testuser",
-  "email": "test@example.com",
-  "password": "password123"
+  "refreshToken": "your_refresh_token"
 }
 ```
 
-### Login
-
-POST `/auth/login`
-
-``Authorization: Bearer YOUR_TOKEN
-``
-### Create Article
-
-POST `/articles`
-
-Body:
-
+**Response:**
 ```json
 {
-  "title": "Test Article",
-  "content": "This is a test article."
+  "accessToken": "new_access_token"
 }
 ```
-## Development Principles
 
-- MVC + Service layer backend architecture
-- Secure JWT authentication
-- Proper separation of concerns
-- Validation-driven request handling
-- Clean frontend-backend integration
-- Centralized error responses
-- RESTful API design
+---
 
-## Production Build
+#### 4. Logout
+Invalidate the refresh token and end the session.
 
-### Backend
+**Endpoint:** `POST /api/auth/logout`
 
-```bash
-npm run build:backend
+**Request Body:**
+```json
+{
+  "refreshToken": "your_refresh_token"
+}
 ```
 
-### Frontend
-
-```bash
-npm run build:frontend
+**Response:**
+```json
+{
+  "message": "Logged out successfully"
+}
 ```
 
+---
+
+### User Routes
+
+#### 5. Get Current User (Protected)
+Retrieve logged-in user information.
+
+**Endpoint:** `GET /api/user/me`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:**
+```json
+{
+  "_id": "user_id",
+  "username": "abdul",
+  "email": "abdul@example.com"
+}
+```
+
+## Testing with Postman
+
+1. **Sign Up:** Create a new user account
+2. **Login:** Get your access and refresh tokens
+3. **Access Protected Route:** Use the access token in the Authorization header
+4. **Refresh Token:** When access token expires, use refresh token to get a new one
+5. **Logout:** Invalidate your refresh token
+
+## What I Learned
+
+- How JWT authentication actually works in practice
+- Proper Express backend architecture and organization
+- Implementing middleware for route protection
+- Secure password storage and validation
+- Token refresh mechanisms and session management
+
+## Future Enhancements
+
+- [ ] Password reset functionality via email
+- [ ] Rate limiting to prevent brute force attacks
+- [ ] Swagger/OpenAPI documentation
+- [ ] Email verification for new accounts
+- [ ] Role-based access control (RBAC)
+- [ ] OAuth integration (Google, GitHub)
