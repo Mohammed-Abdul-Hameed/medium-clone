@@ -1,6 +1,5 @@
 import cors from 'cors';
 import express from 'express';
-import { config } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import articleRoutes from './routes/articleRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -10,8 +9,13 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: config.client.url,
+  origin: [
+    'http://localhost:5173',
+    'https://medium-clone-9rxgvy9tz-mohammed-abdul-hameeds-projects-28ea5fe9.vercel.app'
+  ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

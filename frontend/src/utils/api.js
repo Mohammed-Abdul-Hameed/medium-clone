@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.PROD
+  baseURL: import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/api`
-    : 'http://localhost:5000/api',
+    : (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api'),
 });
 
 // Request interceptor to add auth token
