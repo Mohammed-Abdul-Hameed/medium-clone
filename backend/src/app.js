@@ -17,10 +17,19 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
+// Root Route
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API is running'
+  });
+});
+
+// Health Check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
@@ -30,7 +39,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/users', userRoutes);
 
-// Error handling
+// Error Handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
