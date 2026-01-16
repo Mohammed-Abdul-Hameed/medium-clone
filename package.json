@@ -1,6 +1,7 @@
 {
   "name": "medium-clone",
   "version": "1.0.0",
+   "type": "module",
   "description": "A production-quality Medium-like blogging platform built with the MERN stack, demonstrating industry-standard backend architecture with MVC pattern, JWT authentication, and modern React frontend.",
   "scripts": {
     "install:backend": "cd backend && npm install",
