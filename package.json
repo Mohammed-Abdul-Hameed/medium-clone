@@ -1,7 +1,6 @@
 {
   "name": "medium-clone",
   "version": "1.0.0",
-   "type": "module",
   "description": "A production-quality Medium-like blogging platform built with the MERN stack, demonstrating industry-standard backend architecture with MVC pattern, JWT authentication, and modern React frontend.",
   "scripts": {
     "install:backend": "cd backend && npm install",
@@ -13,14 +12,5 @@
     "build:frontend": "cd frontend && npm run build"
   },
   "keywords": ["medium", "blog", "mern", "express", "react", "mongodb"],
-  "author": "",
-  "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^8.0.3",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "zod": "^3.22.4"
-  }
+  "author": ""
 }

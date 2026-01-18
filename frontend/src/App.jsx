@@ -11,40 +11,40 @@ import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 
 function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <div className="app">
-          <Navbar />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/articles/:id" element={<ArticleView />} />
-              <Route
-                path="/new-article"
-                element={
-                  <ProtectedRoute>
-                    <ArticleEditor />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/edit-article/:id"
-                element={
-                  <ProtectedRoute>
-                    <ArticleEditor />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/profile/:username" element={<Profile />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
-    </AuthProvider>
-  );
+	return (
+		<AuthProvider>
+			<Router>
+				<div className="app">
+					<Navbar />
+					<main className="main-content pt-16 md:pt-20">
+						<Routes>
+							<Route path="/" element={<Home />} />
+							<Route path="/login" element={<Login />} />
+							<Route path="/signup" element={<Signup />} />
+							<Route path="/articles/:id" element={<ArticleView />} />
+							<Route
+								path="/new-article"
+								element={
+									<ProtectedRoute>
+										<ArticleEditor />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/edit-article/:id"
+								element={
+									<ProtectedRoute>
+										<ArticleEditor />
+									</ProtectedRoute>
+								}
+							/>
+							<Route path="/profile/:username" element={<Profile />} />
+						</Routes>
+					</main>
+				</div>
+			</Router>
+		</AuthProvider>
+	);
 }
 
 export default App;

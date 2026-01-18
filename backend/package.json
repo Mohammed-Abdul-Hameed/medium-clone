@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
      "start": "node server.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "dev": "nodemon server.js"
   },
   "keywords": ["medium", "blog", "mern", "express", "mongodb"],
   "author": "",
