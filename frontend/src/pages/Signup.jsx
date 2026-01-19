@@ -2,16 +2,38 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+/**
+ * Signup Component
+ *
+ * Responsibility:
+ * - Provides user interface for new account registration.
+ * - Captures signup credentials and invokes auth context signup action.
+ * - Handles loading and error feedback during registration flow.
+ * - Redirects newly registered users to the home feed upon success.
+ *
+ * This component represents the entry point for new users.
+ */
 const Signup = () => {
+	// Local form state
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 
+	// Auth action and navigation helper
 	const { signup } = useAuth();
 	const navigate = useNavigate();
 
+	/**
+	 * Handles signup form submission.
+	 *
+	 * Contract:
+	 * - Prevents default form submission behavior.
+	 * - Calls auth context signup with provided credentials.
+	 * - Redirects to home route on success.
+	 * - Displays returned error message on failure.
+	 */
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError('');
@@ -30,6 +52,7 @@ const Signup = () => {
 	return (
 		<div className="flex justify-center items-center min-h-[calc(100vh-80px)] p-4 md:p-6">
 			<div className="w-full max-w-[450px] p-6 md:p-10 bg-white rounded-xl shadow-lg border border-border">
+				{/* Page heading */}
 				<h1 className="text-2xl md:text-3xl font-bold mb-2 text-center text-text-primary">
 					Join Medium Clone
 				</h1>
@@ -37,13 +60,16 @@ const Signup = () => {
 					Create an account to start writing
 				</p>
 
+				{/* Error feedback block */}
 				{error && (
 					<div className="bg-red-50 text-error p-3 md:p-4 rounded-lg mb-4 md:mb-6 border-l-4 border-error text-xs md:text-sm">
 						{error}
 					</div>
 				)}
 
+				{/* Signup form */}
 				<form onSubmit={handleSubmit} className="mb-4 md:mb-6">
+					{/* Username input field */}
 					<div className="mb-4 md:mb-6">
 						<label
 							htmlFor="username"
@@ -61,6 +87,7 @@ const Signup = () => {
 						/>
 					</div>
 
+					{/* Email input field */}
 					<div className="mb-4 md:mb-6">
 						<label
 							htmlFor="email"
@@ -78,6 +105,7 @@ const Signup = () => {
 						/>
 					</div>
 
+					{/* Password input field */}
 					<div className="mb-4 md:mb-6">
 						<label
 							htmlFor="password"
@@ -96,6 +124,7 @@ const Signup = () => {
 						/>
 					</div>
 
+					{/* Submit button */}
 					<button
 						type="submit"
 						className="w-full p-3 md:p-3.5 rounded-lg font-semibold text-sm transition-all whitespace-nowrap bg-primary text-white hover:bg-primary-dark hover:-translate-y-[1px] hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
@@ -104,6 +133,7 @@ const Signup = () => {
 					</button>
 				</form>
 
+				{/* Login redirect link */}
 				<p className="text-center text-text-secondary text-xs md:text-sm">
 					Already have an account?{' '}
 					<Link to="/login" className="text-primary font-semibold hover:underline">

@@ -3,18 +3,43 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
 
+/**
+ * Profile Component
+ *
+ * Responsibility:
+ * - Fetches and displays a user's public profile by username.
+ * - Renders user metadata (username, email, bio).
+ * - Displays a list of articles authored by the user.
+ * - Conditionally exposes author-only actions when viewing own profile.
+ *
+ * This component represents the public-facing user profile page.
+ */
 const Profile = () => {
+	// Local state for profile data and UI status flags
 	const [profile, setProfile] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
 
+	// Route param for resolving profile owner
 	const { username } = useParams();
+
+	// Currently authenticated user (if any)
 	const { user: currentUser } = useAuth();
 
+	/**
+	 * Fetch profile data when username route parameter changes.
+	 */
 	useEffect(() => {
 		fetchProfile();
 	}, [username]);
 
+	/**
+	 * Retrieves profile and authored articles from API.
+	 *
+	 * Failure mode:
+	 * - Sets error state if retrieval fails.
+	 * - Always resolves loading state after request completion.
+	 */
 	const fetchProfile = async () => {
 		try {
 			const response = await api.get(`/users/${username}`);
@@ -27,6 +52,7 @@ const Profile = () => {
 		}
 	};
 
+	// Loading state while profile data is being fetched
 	if (loading) {
 		return (
 			<div className="max-w-[728px] mx-auto py-6 md:py-8 px-4 md:px-6 text-center text-text-secondary">
@@ -35,6 +61,7 @@ const Profile = () => {
 		);
 	}
 
+	// Error fallback state
 	if (error) {
 		return (
 			<div className="max-w-[728px] mx-auto py-6 md:py-8 px-4 md:px-6 bg-red-50 text-error p-3 md:p-4 rounded-lg mb-4 md:mb-6 border-l-4 border-error text-xs md:text-sm">
@@ -43,6 +70,7 @@ const Profile = () => {
 		);
 	}
 
+	// Profile not found fallback
 	if (!profile || !profile.user) {
 		return (
 			<div className="max-w-[728px] mx-auto py-6 md:py-8 px-4 md:px-6 text-center text-text-secondary">
@@ -51,12 +79,16 @@ const Profile = () => {
 		);
 	}
 
+	// Extract resolved profile user and articles
 	const profileUser = profile.user;
 	const articles = profile.articles || [];
+
+	// Determine whether the current viewer owns this profile
 	const isOwnProfile = currentUser && currentUser.username === username;
 
 	return (
 		<div className="max-w-[728px] mx-auto py-6 md:py-8 px-4 md:px-6">
+			{/* Profile header section */}
 			<div className="py-8 md:py-12 border-b border-border mb-8 md:mb-12">
 				<h1 className="text-2xl md:text-4xl font-bold mb-2 text-text-primary">
 					{profileUser.username}
@@ -68,10 +100,13 @@ const Profile = () => {
 			</div>
 
 			<div className="profile-articles">
+				{/* Articles section header with conditional write action */}
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 md:mb-8 gap-4">
 					<h2 className="text-xl md:text-[1.75rem] font-bold text-text-primary">
 						Stories
 					</h2>
+
+					{/* Write action visible only on own profile */}
 					{isOwnProfile && (
 						<Link
 							to="/new-article"
@@ -81,8 +116,10 @@ const Profile = () => {
 					)}
 				</div>
 
+				{/* Empty state when no articles exist */}
 				{articles.length === 0 ? (
 					<div className="text-center py-12 md:py-16 px-4 md:px-8 text-text-secondary">
+						{/* Empty state for own profile */}
 						{isOwnProfile ? (
 							<>
 								<h2 className="text-xl md:text-2xl font-semibold mb-4 text-text-primary">
@@ -111,17 +148,23 @@ const Profile = () => {
 					</div>
 				) : (
 					<div className="flex flex-col gap-10">
+						{/* Article preview list */}
 						{articles.map((article) => (
 							<article
 								key={article._id}
 								className="pb-10 border-b border-border transition-all hover:translate-x-1 duration-300 last:border-b-0 group">
 								<Link to={`/articles/${article._id}`}>
+									{/* Article title */}
 									<h2 className="text-2xl font-bold mb-3 text-text-primary leading-tight group-hover:text-primary transition-colors">
 										{article.title}
 									</h2>
+
+									{/* Article excerpt */}
 									<p className="text-text-secondary mb-4 leading-relaxed text-base">
 										{article.content.substring(0, 200)}...
 									</p>
+
+									{/* Publication date */}
 									<div className="flex items-center gap-4 text-sm">
 										<span className="text-text-secondary">
 											{new Date(article.createdAt).toLocaleDateString(

@@ -2,31 +2,50 @@ import User from '../models/User.js';
 import authService from '../services/authService.js';
 import { ApiError } from '../utils/ApiError.js';
 
+/**
+ * Authentication middleware.
+ *
+ * Responsibility:
+ * - Extracts and verifies the JWT access token from the Authorization header.
+ * - Resolves the authenticated user from the database.
+ * - Attaches the user object to the request context for downstream handlers.
+ *
+ * Security boundary:
+ * - Rejects requests with missing, malformed, or invalid tokens.
+ * - Rejects requests referencing non-existent users.
+ *
+ * Expected header format:
+ * Authorization: Bearer <token>
+ */
 export const authMiddleware = async (req, res, next) => {
-  try {
-    // Get token from Authorization header
-    const authHeader = req.headers.authorization;
+	try {
+		// Retrieve Authorization header from incoming request
+		const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw ApiError.unauthorized('No token provided');
-    }
+		// Ensure Bearer token is present before attempting verification
+		if (!authHeader || !authHeader.startsWith('Bearer ')) {
+			throw ApiError.unauthorized('No token provided');
+		}
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+		// Extract raw JWT by removing the Bearer prefix
+		const token = authHeader.substring(7);
 
-    // Verify token
-    const decoded = authService.verifyToken(token);
+		// Verify token integrity and decode payload
+		const decoded = authService.verifyToken(token);
 
-    // Get user from token
-    const user = await User.findById(decoded.userId);
+		// Resolve user associated with token payload
+		const user = await User.findById(decoded.userId);
 
-    if (!user) {
-      throw ApiError.unauthorized('User not found');
-    }
+		// Reject request if token references a non-existent user
+		if (!user) {
+			throw ApiError.unauthorized('User not found');
+		}
 
-    // Attach user to request object
-    req.user = user;
-    next();
-  } catch (error) {
-    next(error);
-  }
+		// Attach authenticated user to request for downstream access control
+		req.user = user;
+		next();
+	} catch (error) {
+		// Forward authentication errors to centralized error handler
+		next(error);
+	}
 };

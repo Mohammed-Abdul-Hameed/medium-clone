@@ -1,116 +1,139 @@
 import articleService from '../services/articleService.js';
 
+/**
+ * ArticleController
+ *
+ * Handles HTTP request/response translation for article resources.
+ * Business logic is intentionally delegated to the service layer.
+ * This controller is responsible only for:
+ *  - Extracting request parameters
+ *  - Enforcing request context (authenticated user)
+ *  - Mapping service responses to HTTP responses
+ *  - Forwarding errors to the centralized error handler
+ */
 class ArticleController {
-  /**
-   * @route   POST /api/articles
-   * @desc    Create a new article
-   * @access  Private
-   */
-  async createArticle(req, res, next) {
-    try {
-      const { title, content } = req.body;
-      const authorId = req.user._id;
+	/**
+	 * Creates a new article authored by the authenticated user.
+	 *
+	 * Trust boundary:
+	 * - req.user is assumed to be populated by authentication middleware.
+	 * - Validation of title/content is expected to occur upstream.
+	 */
+	async createArticle(req, res, next) {
+		try {
+			const { title, content } = req.body;
+			const authorId = req.user._id;
 
-      const article = await articleService.createArticle({
-        title,
-        content,
-        authorId,
-      });
+			const article = await articleService.createArticle({
+				title,
+				content,
+				authorId,
+			});
 
-      res.status(201).json({
-        success: true,
-        message: 'Article created successfully',
-        data: { article },
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+			res.status(201).json({
+				success: true,
+				message: 'Article created successfully',
+				data: { article },
+			});
+		} catch (error) {
+			// Delegate error handling to global error middleware
+			next(error);
+		}
+	}
 
-  /**
-   * @route   GET /api/articles
-   * @desc    Get all articles (feed)
-   * @access  Public
-   */
-  async getAllArticles(req, res, next) {
-    try {
-      const limit = parseInt(req.query.limit) || 20;
-      const skip = parseInt(req.query.skip) || 0;
+	/**
+	 * Returns a paginated feed of articles.
+	 *
+	 * Pagination contract:
+	 * - limit: max number of records to return (default: 20)
+	 * - skip: offset for pagination (default: 0)
+	 */
+	async getAllArticles(req, res, next) {
+		try {
+			const limit = parseInt(req.query.limit) || 20;
+			const skip = parseInt(req.query.skip) || 0;
 
-      const result = await articleService.getAllArticles({ limit, skip });
+			const result = await articleService.getAllArticles({ limit, skip });
 
-      res.status(200).json({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+			res.status(200).json({
+				success: true,
+				data: result,
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 
-  /**
-   * @route   GET /api/articles/:id
-   * @desc    Get single article
-   * @access  Public
-   */
-  async getArticle(req, res, next) {
-    try {
-      const { id } = req.params;
+	/**
+	 * Retrieves a single article by identifier.
+	 * Public access - no authentication context required.
+	 */
+	async getArticle(req, res, next) {
+		try {
+			const { id } = req.params;
 
-      const article = await articleService.getArticle(id);
+			const article = await articleService.getArticle(id);
 
-      res.status(200).json({
-        success: true,
-        data: { article },
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+			res.status(200).json({
+				success: true,
+				data: { article },
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 
-  /**
-   * @route   PUT /api/articles/:id
-   * @desc    Update article
-   * @access  Private (Author only)
-   */
-  async updateArticle(req, res, next) {
-    try {
-      const { id } = req.params;
-      const userId = req.user._id;
-      const updates = req.body;
+	/**
+	 * Updates an existing article.
+	 *
+	 * Authorization contract:
+	 * - req.user must be authenticated.
+	 * - Service layer enforces author ownership.
+	 *
+	 * Partial updates are allowed; only provided fields are modified.
+	 */
+	async updateArticle(req, res, next) {
+		try {
+			const { id } = req.params;
+			const userId = req.user._id;
+			const updates = req.body;
 
-      const article = await articleService.updateArticle(id, userId, updates);
+			const article = await articleService.updateArticle(id, userId, updates);
 
-      res.status(200).json({
-        success: true,
-        message: 'Article updated successfully',
-        data: { article },
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+			res.status(200).json({
+				success: true,
+				message: 'Article updated successfully',
+				data: { article },
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 
-  /**
-   * @route   DELETE /api/articles/:id
-   * @desc    Delete article
-   * @access  Private (Author only)
-   */
-  async deleteArticle(req, res, next) {
-    try {
-      const { id } = req.params;
-      const userId = req.user._id;
+	/**
+	 * Deletes an article.
+	 *
+	 * Authorization contract:
+	 * - req.user must be authenticated.
+	 * - Service layer enforces author ownership.
+	 *
+	 * A successful deletion returns only a confirmation message.
+	 */
+	async deleteArticle(req, res, next) {
+		try {
+			const { id } = req.params;
+			const userId = req.user._id;
 
-      const result = await articleService.deleteArticle(id, userId);
+			const result = await articleService.deleteArticle(id, userId);
 
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+			res.status(200).json({
+				success: true,
+				message: result.message,
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export default new ArticleController();
