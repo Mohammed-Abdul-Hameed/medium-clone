@@ -35,3 +35,13 @@
     @apply font-bold text-text-primary;
   }
 }
+
+@layer utilities {
+  .pb-safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pb-editor-safe {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+}

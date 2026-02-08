@@ -85,7 +85,7 @@ const ArticleEditor = () => {
 	};
 
 	return (
-		<div className="max-w-[728px] mx-auto py-6 md:py-8 px-4 md:px-6 mt-12 relative md:pb-8 pb-20">
+		<div className="max-w-[728px] mx-auto py-6 md:py-8 px-4 md:px-6 mt-12 relative md:pb-8">
 			{/* Floating publish button for desktop layout */}
 			<div className="fixed top-20 md:top-24 right-4 md:right-6 z-10 hidden md:block">
 				<button
@@ -97,18 +97,7 @@ const ArticleEditor = () => {
 				</button>
 			</div>
 
-			{/* Floating publish button optimized for mobile layout */}
-			<div className="fixed bottom-4 md:bottom-6 right-4 md:right-6 z-10 md:hidden">
-				<button
-					type="submit"
-					form="article-form"
-					className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full font-semibold text-sm transition-all whitespace-nowrap bg-primary text-white hover:bg-primary-dark hover:-translate-y-[1px] hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
-					disabled={loading}>
-					{loading ? '...' : isEditMode ? '✓' : '📝'}
-				</button>
-			</div>
-
-			<div className="max-w-[800px] mx-auto py-8 px-6">
+			<div className="max-w-[800px] mx-auto py-8 px-6 pb-editor-safe md:pb-8">
 				<h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-text-primary">
 					{isEditMode ? 'Edit Article' : 'Write a New Story'}
 				</h1>
@@ -147,7 +136,7 @@ const ArticleEditor = () => {
 					</div>
 
 					{/* Form action buttons */}
-					<div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border">
+					<div className="hidden md:flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6 md:mt-8 pt-6 md:pt-8 border-t border-border">
 						{/* Cancel returns user to previous page */}
 						<button
 							type="button"
@@ -165,6 +154,25 @@ const ArticleEditor = () => {
 						</button>
 					</div>
 				</form>
+			</div>
+
+			{/* Sticky action bar for mobile layout */}
+			<div className="sticky bottom-0 md:hidden bg-bg-primary border-t border-border px-4 py-3 pb-safe-area shadow-[0_-6px_18px_rgba(0,0,0,0.06)]">
+				<div className="flex items-center gap-3">
+					<button
+						type="button"
+						onClick={() => navigate(-1)}
+						className="inline-flex items-center justify-center px-4 py-2.5 rounded-full font-semibold text-sm transition-all whitespace-nowrap text-text-secondary hover:text-text-primary">
+						Cancel
+					</button>
+					<button
+						type="submit"
+						form="article-form"
+						className="flex-1 inline-flex items-center justify-center px-5 py-2.5 rounded-full font-semibold text-sm transition-all whitespace-nowrap bg-primary text-white hover:bg-primary-dark hover:-translate-y-[1px] hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+						disabled={loading}>
+						{loading ? 'Saving...' : isEditMode ? 'Update' : 'Publish'}
+					</button>
+				</div>
 			</div>
 		</div>
 	);
